@@ -1,0 +1,20 @@
+version: '3'
+services:
+
+  envoy:
+    build:
+      context: envoy
+    ports:
+      - "10000:10000"
+      - "9901:9901"
+
+  otel-collector:
+    image: otel/opentelemetry-collector:0.12.0
+    command: ["--config=/etc/otel-collector-config.yaml", "--log-level=DEBUG"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "13133:13133" # health_check extension
+      - "55690"       # OTLP receiver
+    depends_on:
+      - envoy
